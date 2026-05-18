@@ -36,7 +36,7 @@ export function ThinkingHeader({
       <span className="text-xs tabular-nums text-[color:var(--color-fg)]">
         {tokensPerSec.toLocaleString()} t/s
       </span>
-      <PixelGrid mode={mode} pixelSize={18} />
+      <PixelGrid mode={mode} cols={6} rows={3} cellSize={4} gap={1} />
       <span className="text-[11px] font-medium text-[color:var(--color-success)]">
         ↑ {fasterBy}% faster
       </span>

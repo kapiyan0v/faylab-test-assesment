@@ -37,6 +37,10 @@ export function RowMenu({
         <Menu.Content
           align="end"
           sideOffset={4}
+          /* Radix renders into a portal but events still bubble through the
+             React tree to the parent row, which would fire its onClick (Edit).
+             Stop propagation here so menu actions stay scoped to the menu. */
+          onClick={(e) => e.stopPropagation()}
           className="min-w-[140px] rounded-md border border-[color:var(--color-border-strong)] bg-[color:var(--color-panel)] p-1 text-sm shadow-2xl radix-content"
         >
           <MenuItem onSelect={onEdit}>Edit</MenuItem>

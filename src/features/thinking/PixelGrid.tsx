@@ -11,48 +11,67 @@ const MODE_VAR: Record<ThinkingMode, string> = {
 };
 
 interface PixelGridProps {
-  /** Side length of the square grid. 4 keeps it dense and compact. */
-  size?: number;
+  /** Number of cells horizontally. */
+  cols?: number;
+  /** Number of cells vertically. */
+  rows?: number;
   /** Mode determines accent color. */
   mode?: ThinkingMode;
-  /** Outer width/height of the grid in px. */
-  pixelSize?: number;
+  /** Cell edge length in px. The container width/height is derived from it. */
+  cellSize?: number;
+  /** Gap between cells in px. */
+  gap?: number;
   className?: string;
 }
 
 /**
- * Small square grid of CSS-animated cells. Each cell pulses with a staggered
- * delay derived from its diagonal index, which produces a sweeping wave that
- * grows from one corner and decays to the other — the look in the brief.
+ * Rectangular grid of CSS-animated cells.
+ *
+ * Pulse delay = (col + distance_from_middle_row), so cells closer to the
+ * vertical centre lead the wave. Each wavefront forms a chevron `>` whose tip
+ * sits in the middle row, and the chevron sweeps left → right — an arrow.
  *
  * Pure CSS: no JS animation loop, no canvas, no dependencies.
  */
-export function PixelGrid({ size = 4, mode = 'fast', pixelSize = 22, className }: PixelGridProps) {
-  const total = size * size;
+export function PixelGrid({
+  cols = 6,
+  rows = 3,
+  mode = 'fast',
+  cellSize = 4,
+  gap = 1,
+  className,
+}: PixelGridProps) {
+  const total = cols * rows;
   const cells = Array.from({ length: total });
-  const maxDiag = (size - 1) * 2;
+  const midRow = (rows - 1) / 2;
+  const maxRowDist = Math.floor(rows / 2);
+  const maxEff = Math.max(cols - 1 + maxRowDist, 1);
   const cycle = 1.8; // matches @keyframes pixel-pulse duration in index.css
+
+  const width = cols * cellSize + (cols - 1) * gap;
+  const height = rows * cellSize + (rows - 1) * gap;
 
   return (
     <div
       aria-hidden
-      className={cn('grid', className)}
+      className={cn('grid shrink-0', className)}
       style={
         {
-          width: pixelSize,
-          height: pixelSize,
-          gridTemplateColumns: `repeat(${size}, 1fr)`,
-          gridTemplateRows: `repeat(${size}, 1fr)`,
-          gap: 1,
+          width,
+          height,
+          gridTemplateColumns: `repeat(${cols}, ${cellSize}px)`,
+          gridTemplateRows: `repeat(${rows}, ${cellSize}px)`,
+          gap,
           '--pixel-color': MODE_VAR[mode],
         } as CSSProperties
       }
     >
       {cells.map((_, i) => {
-        const row = Math.floor(i / size);
-        const col = i % size;
-        const diag = row + col;
-        const delay = (diag / maxDiag) * cycle * 0.5;
+        const col = i % cols;
+        const row = Math.floor(i / cols);
+        const rowDist = Math.abs(row - midRow);
+        const eff = col + rowDist;
+        const delay = (eff / maxEff) * cycle * 0.5;
         return (
           <span
             key={i}
