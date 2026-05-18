@@ -1,0 +1,127 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-bg: #0a0a0a;
+  --color-panel: #111113;
+  --color-panel-2: #161618;
+  --color-border: #1f1f23;
+  --color-border-strong: #2a2a30;
+  --color-muted: #6b6b75;
+  --color-fg: #e7e7ea;
+  --color-fg-dim: #a1a1aa;
+
+  --color-accent: #6366f1;
+  --color-accent-strong: #818cf8;
+
+  --color-success: #4ade80;
+  --color-warning: #f59e0b;
+  --color-danger: #ef4444;
+
+  /* request-mode palettes (chat thinking animation) */
+  --mode-fast: #a78bfa;
+  --mode-balanced: #38bdf8;
+  --mode-quality: #f472b6;
+  --mode-eco: #4ade80;
+
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  background: var(--color-bg);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+* {
+  border-color: var(--color-border);
+}
+
+/* Scrollbar */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #26262b;
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #34343a;
+}
+
+/* ─── Thinking text shimmer ─────────────────────────────────────────── */
+@keyframes thinking-shimmer {
+  0%   { background-position: -120% 0; }
+  100% { background-position: 220% 0; }
+}
+
+.thinking-shimmer {
+  --shimmer-base: #4a4a52;
+  --shimmer-highlight: #ffffff;
+  background: linear-gradient(
+    90deg,
+    var(--shimmer-base) 0%,
+    var(--shimmer-base) 40%,
+    var(--shimmer-highlight) 50%,
+    var(--shimmer-base) 60%,
+    var(--shimmer-base) 100%
+  );
+  background-size: 220% 100%;
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+  animation: thinking-shimmer 2.4s linear infinite;
+}
+
+/* ─── Pixel-grid loader ─────────────────────────────────────────────── */
+@keyframes pixel-pulse {
+  0%, 100% { opacity: 0.08; transform: scale(0.85); }
+  40%      { opacity: 1;    transform: scale(1);   }
+  60%      { opacity: 1;    transform: scale(1);   }
+}
+
+.pixel-cell {
+  --pixel-color: var(--mode-fast);
+  --cell-delay: 0s;
+  width: 100%;
+  height: 100%;
+  background: var(--pixel-color);
+  border-radius: 1px;
+  animation: pixel-pulse 1.8s ease-in-out infinite;
+  animation-delay: var(--cell-delay);
+  opacity: 0.08;
+  will-change: opacity, transform;
+}
+
+/* Subtle row hover ring */
+.row-hover {
+  transition: background-color 120ms ease, box-shadow 120ms ease;
+}
+.row-hover:hover {
+  background-color: var(--color-panel-2);
+}
+
+/* Dialog overlay fade */
+@keyframes overlay-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+@keyframes content-in {
+  from { opacity: 0; transform: translate(-50%, -48%) scale(0.98); }
+  to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+.radix-overlay { animation: overlay-in 140ms ease-out; }
+.radix-content { animation: content-in 160ms ease-out; }
+
+/* Hide scrollbar where we explicitly want a flush look */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { scrollbar-width: none; }
